@@ -7,12 +7,15 @@ import { postMessages, getMessages, editMessage, deleteMessage } from './routes/
 const routes = (app) => {
     app.use(cors());
     app.use(json());
+    
     postParticipants(app);
     getParticipants(app);
+
     postMessages(app);
-    getMessages(app);
+    getMessages(app);    
     editMessage(app);
     deleteMessage(app);
+    
     postStatus(app);
 }
 

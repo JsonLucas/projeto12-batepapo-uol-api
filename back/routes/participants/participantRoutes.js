@@ -12,7 +12,8 @@ export const postParticipants = (app) => {
             const name = req.body.name;
             const lastStatus = Date.now();
             if (name === '') {
-                res.status(422).send('O campo nome não pode ser vazio.');
+                res.sendStatus(422);
+                return;
             } else {
                 let user = {
                     name: name
@@ -29,9 +30,11 @@ export const postParticipants = (app) => {
                     await setMessage(message);
                     await setUser({ ...user, lastStatus });
                     res.sendStatus(201);
+                    return;
                 }
             }
             res.sendStatus(409);
+            return;
         } catch (e) {
             console.log(e.message);
         }
@@ -43,21 +46,19 @@ export const getParticipants = (app) => {
             const user = { name: req.headers.user };
             const now = Date.now();
             const query = await getUser({});
-            setInterval(async () => {
-                for(let i in query){
-                    if(parseInt(query[i].lastStatus) < (now-10000)){
-                        const message = {
-                            from: user.name,
-                            to: 'Todos',
-                            text: 'sai da sala. . .',
-                            type: 'status',
-                            time: dayjs(now).format('HH:mm:ss')
-                        }
-                        await unlinkUser({_id: query[i]._id});
-                        await setMessage(message);
+            for(let i = 0; i < query.length; i++){
+                if(parseInt(query[i].lastStatus) < (now-10000)){
+                    const message = {
+                        from: user.name,
+                        to: 'Todos',
+                        text: 'sai da sala. . .',
+                        type: 'status',
+                        time: dayjs(now).format('HH:mm:ss')
                     }
+                    await unlinkUser({_id: query[i]._id});
+                    await setMessage(message);
                 }
-            }, 15000);
+            }
             const filteredQuery = await getUser({});
             res.send(filteredQuery);
         } catch (e) {

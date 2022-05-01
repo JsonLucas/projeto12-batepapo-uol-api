@@ -30,7 +30,7 @@ function entrarNaSala() {
 function carregarMensagens() {
   if (!buscarMensagens) return;
 
-  const requisicao = axios.get("http://localhost:5000/messages?limit=5", {
+  const requisicao = axios.get("http://localhost:5000/messages?limit=100", {
     headers: {
       User: nome
     }
