@@ -4,19 +4,16 @@ import dayjs from 'dayjs';
 import Joi from 'joi';
 export const postParticipants = (app) => {
     const validateUser = Joi.object({
-        name: Joi.string().disallow('<', '>').required()
+        name: Joi.string().required()
     });
     app.post('/participants', async (req, res) => {
         await dbConnection();
         try {
             const name = req.body.name;
             const lastStatus = Date.now();
-            if (name === '') {
-                res.sendStatus(422);
-                return;
-            } else {
+            validateUser.validateAsync({name: name}).then(async (validated) => {
                 let user = {
-                    name: name
+                    name: name.trim()
                 };
                 const queryUsers = await getUser(user);
                 if (queryUsers.length === 0) {
@@ -27,13 +24,16 @@ export const postParticipants = (app) => {
                         type: 'status',
                         time: dayjs(lastStatus).format('HH:mm:ss')
                     }
-                    await setMessage(message);
                     await setUser({ ...user, lastStatus });
+                    await setMessage(message);
                     res.sendStatus(201);
                     return;
                 }
-            }
-            res.sendStatus(409);
+                res.sendStatus(409);
+            }).catch((e) => {
+                console.log(e.message);
+                res.sendStatus(422);
+            });
             return;
         } catch (e) {
             console.log(e.message);

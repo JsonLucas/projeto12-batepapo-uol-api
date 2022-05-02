@@ -27,6 +27,14 @@ export const getUser = async (user) => {
     return [];
 }
 
+export const unlinkUser = async (idUser) => { 
+    try{
+        await User.deleteOne(idUser).exec();
+    }catch(e){
+        console.log(e.message);
+    }
+}
+
 export const setMessage = async (message) => {
     try{
         await Message.create(message);
@@ -64,14 +72,6 @@ export const updateMessage = async (id, message) => {
         console.log(e.message);
     }
 } 
-
-export const unlinkUser = async (idUser) => { 
-    try{
-        await User.deleteOne(idUser).exec();
-    }catch(e){
-        console.log(e.message);
-    }
-}
 
 export const unlinkMessage = async (options) => {
     try{

@@ -14,13 +14,13 @@ export const getMessages = (app) => {
         try {
             const user = req.headers.user;
             const allMessages = await getMessage();
-            /*let userMessages = [];
-            if (allMessages.length > numMessages.limit) {
-                userMessages = filterUserMessages(numMessages.limit, allMessages, user);
+            let userMessages = [];
+            if (allMessages.length > parseInt(numMessages.limit)) {
+                userMessages = filterUserMessages(parseInt(numMessages.limit), allMessages, user);
             } else {
                 userMessages = filterUserMessages(allMessages.length, allMessages, user);
-            }*/
-            res.status(200).send(allMessages);
+            }
+            res.status(200).send(userMessages);
         } catch (e) {
             console.log(e.message);
             res.sendStatus(404);
@@ -91,6 +91,7 @@ export const deleteMessage = (app) => {
                     return;
                 }
                 await unlinkMessage({ _id: id, from: from });
+                res.sendStatus(200);
                 return;
             }
             res.sendStatus(404);
@@ -103,11 +104,13 @@ export const deleteMessage = (app) => {
 
 const filterUserMessages = (length, array, user) => {
     let userMessages = [];
-    for (let i = 0; i < length; i++) {
-        if ((array[i].from === user) ||
-            (array[i].to === user) ||
-            (array[i].to === 'Todos')) {
+    for (let i in array) {
+        if(array[i].type !== 'private_message'){
             userMessages.push(array[i]);
+        }else{
+            if((array[i].to === user) || (array[i].from === user)){
+                userMessages.push(array[i]);
+            }
         }
     }
     return userMessages;

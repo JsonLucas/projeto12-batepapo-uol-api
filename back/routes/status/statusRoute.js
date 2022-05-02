@@ -1,5 +1,4 @@
 import { getUser, updateUserStatus } from "../../database/actions.js";
-import dayjs from "dayjs";
 export const postStatus = (app) => {
     app.post('/status', async (req, res) => {
         try{
